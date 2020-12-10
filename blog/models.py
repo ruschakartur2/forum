@@ -16,4 +16,22 @@ class Topic(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('topic_detail',args=[str(self.id)])
+        return reverse('topic_detail', args=[str(self.id)])
+
+
+class Comment(models.Model):
+    topic = models.ForeignKey(Topic,
+                              on_delete=models.CASCADE,
+                              related_name='comments')
+    comment = models.CharField(max_length=140)
+    author = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+    )
+
+    def __str__(self):
+        return self.comment
+
+    @staticmethod
+    def get_absolute_url():
+        return reverse('topic_list')

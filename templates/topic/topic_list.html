@@ -12,11 +12,28 @@
             <span class="text-muted">by {{ topic.author }} | {{ topic.date }}</span>
         </div>
         <div class="card-body">
-            {{ topic.body }}
+            {{ topic.body }}<br>
+            {% if topic.author == user %}
+            <form method="POST" action="{% url 'topic_delete' topic.pk %}">
+             <a href="{% url 'topic_edit' topic.pk %}" class="btn btn-primary">Edit</a>
+                {% csrf_token %}<input type="submit" class="btn btn-danger" value="Delete">
+            </form>
+            {% endif %}
         </div>
+
         <div class="card-footer text-center text-muted">
-            <a href="{%  url 'topic_edit' topic.pk %}" class="btn btn-primary">Edit</a> | <a href="{% url 'topic_delete' topic.pk %}" class="btn btn-danger">Delete</a>
+            {% for comment in topic.comments.all %}
+        <p>
+        <span class="font-weight-bold">{{ comment.author }} &middot;</span>
+        {{ comment }}
+        </p>
+                {% endfor %}
+
+            <a  class="btn btn-success" href="{% url 'comment_new' %}">Add new comment </a>
+
         </div>
+
+
         </div>
         <br/>
         <hr>
