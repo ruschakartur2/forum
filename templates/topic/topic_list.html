@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="head" style="text-align: center; margin-top: 3vh; margin-bottom: 7vh;">
+    <h2 class="">All topics</h2>
+    <h4>On this page you may see all topics of our forum.</h4>
+        <a href="" class="btn btn-info">My topics</a>
+    </div>
+    {% for topic in object_list %}
+        <div class="card" style="width:800px;margin:0 auto;">
+        <div class="card-header">
+            <span class="font-weight-bold">{{ topic.title }}</span>&middot;
+            <span class="text-muted">by {{ topic.author }} | {{ topic.date }}</span>
+        </div>
+        <div class="card-body">
+            {{ topic.body }}
+        </div>
+        <div class="card-footer text-center text-muted">
+            <a href="" class="btn btn-primary">Edit</a> | <a href="" class="btn btn-danger">Delete</a>
+        </div>
+        </div>
+        <br/>
+        <hr>
+    {% endfor %}
+{% endblock content %}
