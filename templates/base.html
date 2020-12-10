@@ -9,14 +9,17 @@
 
 </head>
 <body>
+    <header>
    {% if user.is_authenticated %}
     <h4>hi {{ user.username }} , are you {{ user.age }}?</h4>
 <p><a href="{% url 'logout' %}">Log Out</a></p>
+       <a href="{% url 'topic_new' %}" class="btn btn-primary">Add new topic</a>
     {% else %}
         <p>You are not logged in</p>
         <a href="{% url 'login' %}">Login</a>
         <a href="{% url 'signup' %}">Sign up</a>
     {% endif %}
+    </header>
 {% block content %}
 
 {% endblock content %}
