@@ -8,6 +8,7 @@ verify_ssl = true
 [packages]
 django = "*"
 environ = "*"
+generics = "*"
 
 [requires]
 python_version = "3.7"
