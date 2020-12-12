@@ -7,15 +7,11 @@ from django.views.generic import TemplateView, ListView, CreateView, UpdateView,
 
 from .models import Topic, Comment
 
-class CommentCreateView(LoginRequiredMixin,CreateView):
-    model = Comment
-    template_name = 'comment/comment_new.html'
-    fields = ('comment',)
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import JSONParser
+from .serializers import TopicSerializer
 
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        form.instance.topic = self.get_object()
-        return super().form_valid(form)
 
 class TopicCreateView(LoginRequiredMixin, CreateView):
     model = Topic
@@ -65,3 +61,49 @@ class TopicDeleteView(LoginRequiredMixin, DeleteView):
             raise PermissionDenied
             #return HttpResponseForbidden("403 Forbidden, you don't have access")
         return super().dispatch(request, *args, **kwargs)
+
+
+# Write API
+@csrf_exempt
+def topic_list(request):
+    """
+    List all code snippets, or create a new snippet.
+    """
+    if request.method == 'GET':
+        topics = Topic.objects.all()
+        serializer = TopicSerializer(topics, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = TopicSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+@csrf_exempt
+def topic_detail(request, pk):
+    """
+    Retrieve, update or delete a code snippet.
+    """
+    try:
+        topic = Topic.objects.get(pk=pk)
+    except Topic.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = TopicSerializer(topic)
+        return JsonResponse(serializer.data)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = TopicSerializer(topic, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        topic.delete()
+        return HttpResponse(status=204)

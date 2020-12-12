@@ -7,11 +7,12 @@
 <p>{{ object.body }}</p>
 </div>
 
-    <form method="POST" action="{% url 'topic_delete' topic.pk %}">
-    <a href="{% url 'topic_edit' topic.pk %}" class="btn btn-primary">Edit</a>
-   {% csrf_token %}<input type="submit" class="btn btn-danger" value="Delete">
-</form>
-
+   {% if topic.author == user %}
+            <form method="POST" action="{% url 'topic_delete' topic.pk %}">
+             <a href="{% url 'topic_edit' topic.pk %}" class="btn btn-primary">Edit</a>
+                {% csrf_token %}<input type="submit" class="btn btn-danger" value="Delete">
+            </form>
+   {% endif %}
 
     <a href="{% url 'topic_list' %}" class="btn btn-info">Back to topics</a>
 {% endblock content %}
