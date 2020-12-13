@@ -11,8 +11,8 @@ urlpatterns = [
     path('<int:pk>/', TopicDetailView.as_view(), name='topic_detail'),
     path('<int:pk>/delete/', TopicDeleteView.as_view(), name='topic_delete'),
     path('new/', TopicCreateView.as_view(), name='topic_new'),
-    path('api/', TopicList.as_view(),name = 'topic_api'),
-    path('api/<int:pk>',TopicDetail.as_view(),name='topic_detail'),
+    path('api/', TopicList.as_view(),name = 'api/topic'),
+    path('api/<int:pk>',TopicDetail.as_view(),name='api/topic_detail'),
 
 
     path('openapi/', get_schema_view(
@@ -21,7 +21,7 @@ urlpatterns = [
     ), name='openapi-schema'),
 
     path('docs/', TemplateView.as_view(
-        template_name='documentation.html',
+        template_name='documentatiW2on.html',
         extra_context={'schema_url': 'openapi-schema'}
     ), name='swagger-ui'),
 ]

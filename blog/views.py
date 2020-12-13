@@ -3,8 +3,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseForbidden
 # Create your views here.
-from django.urls import reverse_lazy
-from django.views.generic import  ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.urls import reverse_lazy, reverse
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from rest_framework import generics
 
 from .models import Topic, Comment
@@ -21,6 +21,8 @@ class TopicCreateView(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
+    def get_success_url(self):
+        return reverse('topic_detail', kwargs={'pk': self.object.pk})
 
 class TopicListView(LoginRequiredMixin, ListView):
     model = Topic
@@ -74,4 +76,3 @@ class TopicList(generics.ListCreateAPIView):
 class TopicDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
-

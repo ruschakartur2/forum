@@ -12,7 +12,7 @@
 <body>
     <header>
    {% if user.is_authenticated %}
-    <h4>hi {{ user.username }} , are you {{ user.age }}?</h4>
+    <h4>hi <a href="{%  url 'profile' %}">{{ user.username }}</a> , are you {{ user.age }}?</h4>
 <p><a href="{% url 'logout' %}">Log Out</a></p>
        <a href="{% url 'topic_new' %}" class="btn btn-primary">Add new topic</a>
     {% else %}
