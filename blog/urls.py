@@ -3,7 +3,15 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
 
-from .views import TopicListView, TopicUpdateView, TopicDetailView, TopicDeleteView, TopicCreateView, TopicList, TopicDetail
+from .views import (TopicListView,
+                    TopicUpdateView,
+                    TopicDetailView,
+                    TopicDeleteView,
+                    TopicCreateView,
+                    TopicList,
+                    TopicDetail,
+                    CommentList,
+                    CommentDetail)
 
 urlpatterns = [
     path('', TopicListView.as_view(), name='topic_list'),
@@ -11,8 +19,11 @@ urlpatterns = [
     path('<int:pk>/', TopicDetailView.as_view(), name='topic_detail'),
     path('<int:pk>/delete/', TopicDeleteView.as_view(), name='topic_delete'),
     path('new/', TopicCreateView.as_view(), name='topic_new'),
-    path('api/', TopicList.as_view(),name = 'api/topic'),
-    path('api/<int:pk>',TopicDetail.as_view(),name='api/topic_detail'),
+
+    path('topic/api/', TopicList.as_view(),name = 'topic/api'),
+    path('topic/api/<int:pk>',TopicDetail.as_view(),name='topic_detail/api'),
+    path('comment/api',CommentList.as_view(),name='comment/api'),
+    path('comment/api/<int:pk>', CommentDetail.as_view(),name='comment_detail/api'),
 
 
     path('openapi/', get_schema_view(

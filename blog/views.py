@@ -1,15 +1,21 @@
 import generics as generics
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, request
 # Create your views here.
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from rest_framework import generics
+from django.http import HttpResponseRedirect
+
+from .forms import NewCommentForm
 
 from .models import Topic, Comment
 
-from .serializers import TopicSerializer
+from .serializers import TopicSerializer, CommentSerializer
 
 
 class TopicCreateView(LoginRequiredMixin, CreateView):
@@ -24,6 +30,7 @@ class TopicCreateView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         return reverse('topic_detail', kwargs={'pk': self.object.pk})
 
+
 class TopicListView(LoginRequiredMixin, ListView):
     model = Topic
     template_name = 'topic/topic_list.html'
@@ -34,6 +41,34 @@ class TopicDetailView(LoginRequiredMixin, DetailView):
     model = Topic
     template_name = 'topic/topic_detail.html'
     login_url = 'login'
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+
+        comments_connected = Comment.objects.filter(
+            topic_connected=self.get_object()).order_by('-date_posted')
+        data['comments'] = comments_connected
+
+        if self.request.user.is_authenticated:
+            data['comment_form'] = NewCommentForm(instance=self.request.user)
+
+        return data
+
+    def post(self, request, *args, **kwargs):
+        if request.method == 'POST':
+            comment_form = NewCommentForm(request.POST or None)
+            if comment_form.is_valid():
+                content = request.POST.get('content')
+                reply_id = request.POST.get('comment_id')
+                comment_qs = None
+                if reply_id:
+                    comment_qs = Comment.objects.get(id=reply_id)
+                comment = Comment.objects.create(topic_connected=self.get_object(), author=self.request.user,
+                                                 content=content, reply=comment_qs)
+                comment.save()
+                return HttpResponseRedirect(self.request.path_info)
+        else:
+            comment_form = NewCommentForm
 
 
 class TopicUpdateView(LoginRequiredMixin, UpdateView):
@@ -64,6 +99,9 @@ class TopicDeleteView(LoginRequiredMixin, DeleteView):
         return super().dispatch(request, *args, **kwargs)
 
 
+# Write comments
+
+
 # Write API
 class TopicList(generics.ListCreateAPIView):
     queryset = Topic.objects.all()
@@ -76,3 +114,13 @@ class TopicList(generics.ListCreateAPIView):
 class TopicDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
+
+
+class CommentList(generics.ListCreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+
+class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer

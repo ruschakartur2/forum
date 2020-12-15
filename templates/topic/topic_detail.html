@@ -15,4 +15,38 @@
    {% endif %}
 
     <a href="{% url 'topic_list' %}" class="btn btn-info">Back to topics</a>
+
+           <h2>Leave your comment!</h2>
+<div id="comments_section">
+    {{ comments.count }} Comment {{ comment|pluralize }}
+    {% for comment in comments %}
+    <blockquote class="blockquote">
+    <p class="mb-0">{{ comment.content }}</p>
+    <footer>by {{ comment.author|capfirst }}</footer>
+    </blockquote>
+    {% for reply in comment.replies.all %}
+<blockquote class="blockquote ml-5">
+    <p class="mb-0" >{{ reply.content }}</p>
+    <footer>by {{ reply.author|capfirst }}</footer>
+</blockquote>
+    {% endfor %}
+    <div class="form-group">
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="comment_id" value="{{ comment.id }}">
+            {{ comment_form.as_p }}
+            {% if request.user.is_authenticated %}
+                <input type="submit" value="Submit" class="btn btn-success">
+            {% else %}
+            <input type="submit" value="Submit" class="btn btn-success" disabled>
+
+            {% endif %}
+
+        </form>
+    </div>
+
+    {% endfor %}
+    
+</div>
+
 {% endblock content %}
