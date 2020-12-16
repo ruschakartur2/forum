@@ -17,17 +17,42 @@
     <a href="{% url 'topic_list' %}" class="btn btn-info">Back to topics</a>
 
            <h2>Leave your comment!</h2>
+    <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="comment_id" value="{{ comment.id }}">
+            {{ comment_form.as_p }}
+            {% if request.user.is_authenticated %}
+                <input type="submit" value="Submit" class="btn btn-success">
+            {% else %}
+            <input type="submit" value="Submit" class="btn btn-success" disabled>
+
+            {% endif %}
+        </form>
+    <hr>
+    <br>
 <div id="comments_section">
     {{ comments.count }} Comment {{ comment|pluralize }}
     {% for comment in comments %}
+        {% if comment.reply == None %}
     <blockquote class="blockquote">
     <p class="mb-0">{{ comment.content }}</p>
     <footer>by {{ comment.author|capfirst }}</footer>
+    {% if comment.author == user %}
+            <form method="POST" action="{% url 'comment_delete' comment.pk %}">
+                {% csrf_token %}<input type="submit" class="btn btn-danger" value="Delete">
+            </form>
+            {% endif %}
     </blockquote>
     {% for reply in comment.replies.all %}
 <blockquote class="blockquote ml-5">
     <p class="mb-0" >{{ reply.content }}</p>
     <footer>by {{ reply.author|capfirst }}</footer>
+
+{% if reply.author == user %}
+            <form method="POST" action="{% url 'comment_delete' comment.pk %}">
+                {% csrf_token %}<input type="submit" class="btn btn-danger" value="Delete">
+            </form>
+            {% endif %}
 </blockquote>
     {% endfor %}
     <div class="form-group">
@@ -44,6 +69,7 @@
 
         </form>
     </div>
+         {% endif %}
 
     {% endfor %}
     

@@ -4,10 +4,8 @@ from django.contrib import admin
 from .models import Topic, Comment
 
 
-
 class CommentLine(admin.TabularInline):
     model = Comment
-
 
 
 class TopicAdmin(admin.ModelAdmin):

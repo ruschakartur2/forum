@@ -1,10 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.db.models import TextField
 from django.urls import reverse
 from django.utils import timezone
-
-from pygments.lexers import get_all_lexers
 
 
 class Topic(models.Model):
@@ -29,9 +26,11 @@ class Topic(models.Model):
 
 class Comment(models.Model):
     topic_connected = models.ForeignKey(
-        Topic, related_name='comments', on_delete=models.CASCADE)
+        Topic, related_name='comments',
+        on_delete=models.CASCADE
+    )
 
-    content = TextField()
+    content = models.CharField(max_length=1254)
     author = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,

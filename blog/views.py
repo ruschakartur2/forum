@@ -1,21 +1,13 @@
-import generics as generics
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponseForbidden, request
-# Create your views here.
-from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
-from rest_framework import generics
 from django.http import HttpResponseRedirect
 
-from .forms import NewCommentForm
+from blog.forms import NewCommentForm
 
-from .models import Topic, Comment
 
-from .serializers import TopicSerializer, CommentSerializer
+from .models import Topic,Comment
 
 
 class TopicCreateView(LoginRequiredMixin, CreateView):
@@ -99,28 +91,16 @@ class TopicDeleteView(LoginRequiredMixin, DeleteView):
         return super().dispatch(request, *args, **kwargs)
 
 
-# Write comments
+class CommentDeleteView(LoginRequiredMixin, DeleteView):
+    model = Comment
+    login_url = 'login'
 
+    def get_success_url(self):
+        return reverse('topic_detail', kwargs={'pk': self.object.topic_connected.pk})
 
-# Write API
-class TopicList(generics.ListCreateAPIView):
-    queryset = Topic.objects.all()
-    serializer_class = TopicSerializer
-
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-
-
-class TopicDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Topic.objects.all()
-    serializer_class = TopicSerializer
-
-
-class CommentList(generics.ListCreateAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-
-
-class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
+    def dispatch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.author or obj.reply.author != self.request.user:
+            raise PermissionDenied
+            # return HttpResponseForbidden("403 Forbidden, you don't have access")
+        return super().dispatch(request, *args, **kwargs)

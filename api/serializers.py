@@ -1,6 +1,7 @@
 from django.utils import timezone
 from rest_framework import serializers
-from .models import Topic, Comment
+
+from blog.models import Topic, Comment
 
 
 class TopicSerializer(serializers.ModelSerializer):
@@ -16,6 +17,7 @@ class TopicSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
+    date_posted = serializers.SerializerMethodField()
     topic_connected = serializers.SerializerMethodField()
 
     class Meta:
@@ -27,3 +29,6 @@ class CommentSerializer(serializers.ModelSerializer):
 
     def get_topic_connected(self, obj):
         return obj.topic_connected.title
+
+    def get_date_posted(self, obj):
+        return obj.date_posted
