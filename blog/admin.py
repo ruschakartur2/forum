@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Topic, Comment
+from comments.models import Comment
+from .models import Topic
 
 
 class CommentLine(admin.TabularInline):
@@ -15,4 +16,3 @@ class TopicAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Topic, TopicAdmin)
-admin.site.register(Comment)

@@ -5,7 +5,9 @@ from .views import (TopicListView,
                     TopicDetailView,
                     TopicDeleteView,
                     TopicCreateView,
-                    CommentDeleteView)
+                    TopicDetailAPI,
+                    TopicListAPI
+                    )
 
 urlpatterns = [
     path('', TopicListView.as_view(), name='topic_list'),
@@ -14,6 +16,7 @@ urlpatterns = [
     path('<int:pk>/delete/', TopicDeleteView.as_view(), name='topic_delete'),
     path('new/', TopicCreateView.as_view(), name='topic_new'),
 
-    path('comment/<int:pk>/delete', CommentDeleteView.as_view(), name='comment_delete'),
+    path('api/<int:pk>/', TopicDetailAPI.as_view(), name='topic-api-detail'),
+    path('api', TopicListAPI.as_view(),name='topic-api-list')
 
 ]

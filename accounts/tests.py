@@ -2,6 +2,9 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 
 # Create your tests here.
+from django.urls import reverse
+
+
 class SignUpTests(TestCase):
     username = 'testuser'
     email = 'testuser@gmail.com'

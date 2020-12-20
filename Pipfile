@@ -9,6 +9,8 @@ verify_ssl = true
 django = "*"
 environ = "*"
 generics = "*"
+mixins = "*"
+serializers = "*"
 
 [requires]
 python_version = "3.7"

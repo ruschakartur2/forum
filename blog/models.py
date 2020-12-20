@@ -16,30 +16,6 @@ class Topic(models.Model):
     def __str__(self):
         return self.title
 
-    @property
-    def number_of_comments(self):
-        return Comment.objects.filter(topic_connected=self).count()
-
     def get_absolute_url(self):
         return reverse('topic_detail', args=[str(self.id)])
 
-
-class Comment(models.Model):
-    topic_connected = models.ForeignKey(
-        Topic, related_name='comments',
-        on_delete=models.CASCADE
-    )
-
-    content = models.CharField(max_length=1254)
-    author = models.ForeignKey(
-        get_user_model(),
-        on_delete=models.CASCADE,
-    )
-    reply = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name='replies')
-    date_posted = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return self.content
-
-    def get_absolute_url(self):
-        return reverse('topic_list')
