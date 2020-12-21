@@ -16,13 +16,13 @@ AccessToken = get_access_token_model()
 UserModel = get_user_model()
 
 
-class Test_mytest(APITestCase):
+class UserAuthTest(APITestCase):
 
     def setUp(self):
 
-        oauth2_settings._SCOPES = ["read", "write", "scope1", "scope2", "resource1"]
+        oauth2_settings._SCOPES = ["read", "write"]
 
-        self.test_user = UserModel.objects.create_user("test_user", "test@example.com", "123456")
+        self.test_user = UserModel.objects.create_user("ar2r4ik", "test2@example.com", "1234568")
 
         self.application = Application.objects.create(
                                                 name="Test Application",
@@ -53,3 +53,4 @@ class Test_mytest(APITestCase):
         # Obtaining the POST response for the input data
         response = self.client.get(url, HTTP_AUTHORIZATION=self.auth)
 
+        # checking wether the response is success
