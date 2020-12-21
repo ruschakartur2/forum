@@ -20,6 +20,8 @@ urlpatterns = [
     path('api/logoutall/', knox_views.LogoutAllView.as_view(), name='logoutall'),
     path('api/change-password/', ChangePasswordView.as_view(), name='change-password'),
 
+    path('auth/', include('rest_framework_social_oauth2.urls')),
+
 ]
 
 
