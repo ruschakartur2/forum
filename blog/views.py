@@ -4,7 +4,10 @@ from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.http import HttpResponseRedirect
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, generics
+
+from django.db.models import Q
 
 from .models import Topic
 from .serializers import TopicSerializer
@@ -24,10 +27,9 @@ class TopicCreateView(LoginRequiredMixin, CreateView):
 
 
 class TopicListView(LoginRequiredMixin, ListView):
-    model = Topic
     template_name = 'topic/topic_list.html'
     login_url = 'login'
-
+    model = Topic
 
 class TopicDetailView(LoginRequiredMixin, DetailView):
     model = Topic
@@ -69,8 +71,10 @@ class TopicDetailAPI(generics.RetrieveUpdateDestroyAPIView):
 
 
 class TopicListAPI(generics.ListCreateAPIView):
-    queryset = Topic.objects.all()
     serializer_class = TopicSerializer
+    queryset = Topic.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['title', 'body','author']
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
