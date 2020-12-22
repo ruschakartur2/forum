@@ -5,13 +5,12 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.http import HttpResponseRedirect
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import mixins, generics
+from rest_framework import mixins, generics, status
 
-from django.db.models import Q
 
 from .models import Topic
 from .serializers import TopicSerializer
-
+from .permissions import IsOwnerOrReadOnly
 
 class TopicCreateView(LoginRequiredMixin, CreateView):
     model = Topic
@@ -68,6 +67,9 @@ class TopicDeleteView(LoginRequiredMixin, DeleteView):
 class TopicDetailAPI(generics.RetrieveUpdateDestroyAPIView):
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
+
+    permission_classes = [IsOwnerOrReadOnly]
+
 
 
 class TopicListAPI(generics.ListCreateAPIView):

@@ -114,13 +114,12 @@ class ProfileListView(generics.ListCreateAPIView):
     queryset = Profile.objects.all()
     permission_classes = (IsAuthenticated,)
 
-    def post(self, request, format=None):
-        serializer = AuthTokenSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 class ProfileDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     model = Profile
     permission_classes = (IsAuthenticated,)
     queryset = Profile.objects.all()
+

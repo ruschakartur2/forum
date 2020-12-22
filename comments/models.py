@@ -21,3 +21,7 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.content
+
+    @property
+    def owner(self):
+        return self.author

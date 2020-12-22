@@ -119,6 +119,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'knox.auth.TokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
@@ -127,7 +130,8 @@ REST_FRAMEWORK = {
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
         'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ],
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+
 }
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',

@@ -6,6 +6,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from blog.permissions import IsOwnerOrReadOnly
 from .models import Comment
 from .serializers import CommentCreateSerializer, CommentListSerializer
 
@@ -19,6 +20,8 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     model = Comment
     queryset = Comment.objects.all()
     serializer_class = CommentListSerializer
+
+    permission_classes = [IsOwnerOrReadOnly]
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)

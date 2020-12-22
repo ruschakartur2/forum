@@ -18,3 +18,6 @@ class Topic(models.Model):
     def get_absolute_url(self):
         return reverse('topic_detail', args=[str(self.id)])
 
+    @property
+    def owner(self):
+        return self.author
