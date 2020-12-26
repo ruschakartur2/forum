@@ -4,7 +4,7 @@ from knox import views as knox_views
 
 from django.contrib.auth import logout
 from django.urls import path, include
-from .views import profile, RegisterAPI, LoginAPI, ChangePasswordView, ProfileListView, ProfileDetailView
+from .views import profile, RegisterAPI, LoginAPI, ChangePasswordView, ProfileListView, ProfileDetailView, UserListView, UserDetailView
 
 from .views import SignUpView
 
@@ -21,6 +21,9 @@ urlpatterns = [
     path('api/change-password/', ChangePasswordView.as_view(), name='change-password'),
     path('api/profiles', ProfileListView.as_view(),name='profiles'),
     path('api/profile/<int:pk>/', ProfileDetailView.as_view(), name='profile-detail'),
+
+    path('api/users', UserListView.as_view(),name='users'),
+    path('api/users/<int:pk>/', UserDetailView.as_view(),name='user-detail'),
 
     path('auth/', include('rest_framework_social_oauth2.urls')),
 

@@ -6,6 +6,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from knox.models import AuthToken
 
+from blog.permissions import IsOwnerOrReadOnly, IsModer
 from .models import Profile
 from .serializers import RegisterSerializer, ChangePasswordSerializer, ProfileSerializer
 from knox.views import LoginView as KnoxLoginView
@@ -18,8 +19,8 @@ from django.urls import reverse_lazy
 from django.views import generic
 from rest_framework import generics
 
-from .serializers import UserSerializer
-from rest_framework.permissions import IsAuthenticated
+from .serializers import UserSerializer, UserDetailSerializer, UserRegSerializer
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 
 class SignUpView(generic.CreateView):
@@ -57,7 +58,7 @@ class RegisterAPI(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         return Response({
-            "user": UserSerializer(user, context=self.get_serializer_context()).data,
+            "user": UserRegSerializer(user, context=self.get_serializer_context()).data,
             "token": AuthToken.objects.create(user)[1]
         })
 
@@ -112,14 +113,28 @@ class ProfileListView(generics.ListCreateAPIView):
     serializer_class = ProfileSerializer
     model = Profile
     queryset = Profile.objects.all()
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsAdminUser)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+
 class ProfileDetailView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     model = Profile
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsOwnerOrReadOnly,)
     queryset = Profile.objects.all()
 
+
+class UserListView(generics.ListCreateAPIView):
+    serializer_class = UserSerializer
+    model = get_user_model()
+    permission_classes = (IsAdminUser,IsModer,)
+    queryset = get_user_model().objects.all()
+
+
+class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = UserDetailSerializer
+    model = get_user_model()
+    permission_classes = (IsAdminUser,IsModer,)
+    queryset = get_user_model().objects.all()

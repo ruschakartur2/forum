@@ -6,19 +6,30 @@ from accounts.models import CustomUser as User, Profile
 
 
 # User Serializer
-class UserSerializer(serializers.ModelSerializer):
+class UserRegSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'email',)
 
 
+class UserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password', 'is_moder', 'is_staff')
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(many=False, read_only=True, slug_field='username')
+
     class Meta:
         model = Profile
-        fields = ['user','image']
-
-
+        fields = ['user', 'image']
 
 
 # Register Serializer
@@ -33,7 +44,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         return user
 
-#Change password Serializer
+
+# Change password Serializer
 class ChangePasswordSerializer(serializers.Serializer):
     model = User
 
