@@ -4,6 +4,8 @@ from comments.models import Comment
 
 
 class CommentCreateSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(many=False, read_only=True, slug_field='username')
+
     class Meta:
         model = Comment
         fields = ['content', 'topic', 'author']

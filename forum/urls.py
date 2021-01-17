@@ -21,6 +21,7 @@ from forum import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('admin/api/',include('adminPanel.urls')),
     path('accounts/',include('django.contrib.auth.urls')),
     path('accounts/', include('accounts.urls')),
     path('topics/',include('blog.urls')),

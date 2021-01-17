@@ -6,7 +6,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from knox.models import AuthToken
 
-from blog.permissions import IsOwnerOrReadOnly, IsModer
+from blog.permissions import IsOwnerOrReadOnly
 from .models import Profile
 from .serializers import RegisterSerializer, ChangePasswordSerializer, ProfileSerializer
 from knox.views import LoginView as KnoxLoginView
@@ -19,7 +19,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from rest_framework import generics
 
-from .serializers import UserSerializer, UserDetailSerializer, UserRegSerializer
+from .serializers import UserRegSerializer
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 
@@ -126,15 +126,3 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
     queryset = Profile.objects.all()
 
 
-class UserListView(generics.ListCreateAPIView):
-    serializer_class = UserSerializer
-    model = get_user_model()
-    permission_classes = (IsAdminUser,IsModer,)
-    queryset = get_user_model().objects.all()
-
-
-class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = UserDetailSerializer
-    model = get_user_model()
-    permission_classes = (IsAdminUser,IsModer,)
-    queryset = get_user_model().objects.all()

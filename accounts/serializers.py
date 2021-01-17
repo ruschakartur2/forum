@@ -12,18 +12,6 @@ class UserRegSerializer(serializers.ModelSerializer):
         fields = ('username', 'email',)
 
 
-class UserDetailSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = '__all__'
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'password', 'is_moder', 'is_staff')
-
-
 class ProfileSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(many=False, read_only=True, slug_field='username')
 

@@ -1,16 +1,14 @@
-import mixins as mixins
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
-from django.http import HttpResponseRedirect
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import mixins, generics, status
-
+from rest_framework import generics
 
 from .models import Topic
 from .serializers import TopicSerializer
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwnerOrReadOnly, IsModer
+
 
 class TopicCreateView(LoginRequiredMixin, CreateView):
     model = Topic
@@ -29,6 +27,7 @@ class TopicListView(LoginRequiredMixin, ListView):
     template_name = 'topic/topic_list.html'
     login_url = 'login'
     model = Topic
+
 
 class TopicDetailView(LoginRequiredMixin, DetailView):
     model = Topic
@@ -68,15 +67,14 @@ class TopicDetailAPI(generics.RetrieveUpdateDestroyAPIView):
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
 
-    permission_classes = [IsOwnerOrReadOnly]
-
+    permission_classes = [IsOwnerOrReadOnly, IsModer]
 
 
 class TopicListAPI(generics.ListCreateAPIView):
     serializer_class = TopicSerializer
     queryset = Topic.objects.all()
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['title', 'body','author']
+    filterset_fields = ['title', 'body', 'author']
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)

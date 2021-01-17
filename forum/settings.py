@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'knox',
     'django_filters',
 
+    'adminPanel',
     'accounts',
     'blog',
     'comments',
@@ -132,6 +133,8 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
 }
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
