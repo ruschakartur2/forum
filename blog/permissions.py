@@ -1,4 +1,13 @@
-from rest_framework import permissions
+from django.contrib.auth import get_user_model
+from rest_framework import permissions, status
+from rest_framework.exceptions import APIException
+
+from blog.models import Moder
+
+
+class BannedForbidden(APIException):
+    status_code = status.HTTP_403_FORBIDDEN
+    default_code = "You are banned"
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
@@ -10,6 +19,14 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         return obj.owner == request.user
 
 
-class IsModer(permissions.BasePermission):
+class isModerTopic(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        moder = Moder.objects.filter(topics=obj.id,user=request.user)
+
+        return moder
+
+
+class IsBanned(permissions.BasePermission):
     def has_permission(self, request, view):
-        return request.user.is_moder
+        return request.user.is_banned == False

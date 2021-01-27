@@ -7,7 +7,7 @@ from rest_framework import generics
 
 from .models import Topic
 from .serializers import TopicSerializer
-from .permissions import IsOwnerOrReadOnly, IsModer
+from .permissions import IsOwnerOrReadOnly, IsBanned, isModerTopic
 
 
 class TopicCreateView(LoginRequiredMixin, CreateView):
@@ -67,10 +67,11 @@ class TopicDetailAPI(generics.RetrieveUpdateDestroyAPIView):
     queryset = Topic.objects.all()
     serializer_class = TopicSerializer
 
-    permission_classes = [IsOwnerOrReadOnly, IsModer]
+    permission_classes = [IsOwnerOrReadOnly, IsBanned, isModerTopic]
 
 
 class TopicListAPI(generics.ListCreateAPIView):
+    permission_classes = [IsBanned, isModerTopic]
     serializer_class = TopicSerializer
     queryset = Topic.objects.all()
     filter_backends = [DjangoFilterBackend]

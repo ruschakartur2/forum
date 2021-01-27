@@ -3,10 +3,8 @@ from django.shortcuts import render
 # Create your views here.
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
-from blog.permissions import IsOwnerOrReadOnly
+from blog.permissions import IsOwnerOrReadOnly, IsBanned
 from .models import Comment
 from .serializers import CommentCreateSerializer, CommentListSerializer
 
@@ -21,7 +19,7 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentListSerializer
 
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly, IsBanned]
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
@@ -31,6 +29,6 @@ class CommentListView(generics.ListAPIView):
     model = Comment
     queryset = Comment.objects.all()
     serializer_class = CommentListSerializer
-
+    permission_classes = [IsBanned]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['topic', 'author', 'content']
