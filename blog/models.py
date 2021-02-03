@@ -14,21 +14,22 @@ class Topic(models.Model):
         get_user_model(),
         on_delete=models.CASCADE,
     )
+    is_closed = models.BooleanField('closed topic', default=False)
+
     def __str__(self):
         return self.title
 
     def get_absolute_url(self):
         return reverse('topic_detail', args=[str(self.id)])
 
-
     @property
     def owner(self):
         return self.author
 
+
 class Moder(models.Model):
-    user = models.ForeignKey(get_user_model(),on_delete=models.CASCADE)
-    topics = models.ForeignKey(Topic,on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(),unique=True, on_delete=models.CASCADE, related_name='users')
+    topics = models.ManyToManyField(Topic, related_name='topics')
 
     def __str__(self):
         return self.user.username
-    

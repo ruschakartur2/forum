@@ -1,8 +1,9 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from rest_framework.relations import PrimaryKeyRelatedField
 from social_core.tests.models import User
 
-from blog.models import Topic
+from blog.models import Topic, Moder
 from comments.serializers import CommentSerializer
 
 
@@ -18,4 +19,12 @@ class TopicAdminSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Topic
+        fields = '__all__'
+
+
+class ModerSerializer(serializers.ModelSerializer):
+    topics = TopicAdminSerializer(many=True)
+
+    class Meta:
+        model = Moder
         fields = '__all__'

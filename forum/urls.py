@@ -26,6 +26,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('topics/',include('blog.urls')),
     path('comments/',include('comments.urls')),
+    path('moder/',include('moderPanel.urls')),
     path('',include('blog.urls'))
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

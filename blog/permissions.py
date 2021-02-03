@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import permissions, status
 from rest_framework.exceptions import APIException
 
-from blog.models import Moder
+from blog.models import Moder, Topic
 
 
 class BannedForbidden(APIException):
@@ -19,12 +19,13 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         return obj.owner == request.user
 
 
-class isModerTopic(permissions.BasePermission):
+class IsClosed(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
-        moder = Moder.objects.filter(topics=obj.id,user=request.user)
+        if request.method in permissions.SAFE_METHODS:
+            return True
 
-        return moder
+        return obj.is_closed == False
 
 
 class IsBanned(permissions.BasePermission):
