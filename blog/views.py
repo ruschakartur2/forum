@@ -3,7 +3,10 @@ from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics
+from rest_framework import generics, viewsets, renderers
+from rest_framework.decorators import action, renderer_classes
+from rest_framework.generics import get_object_or_404
+from rest_framework.response import Response
 
 from .models import Topic
 from .serializers import TopicSerializer
@@ -63,19 +66,26 @@ class TopicDeleteView(LoginRequiredMixin, DeleteView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class TopicDetailAPI(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Topic.objects.all()
-    serializer_class = TopicSerializer
-
-    permission_classes = [IsOwnerOrReadOnly, IsBanned, IsClosed]
-
-
-class TopicListAPI(generics.ListCreateAPIView):
-    permission_classes = [IsBanned,]
+class TopicViewSet(viewsets.ModelViewSet):
     serializer_class = TopicSerializer
     queryset = Topic.objects.all()
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['title', 'body', 'author']
-
+    
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+# class TopicDetailAPI(generics.RetrieveUpdateDestroyAPIView):
+#    queryset = Topic.objects.all()
+#    serializer_class = TopicSerializer
+#
+#   permission_classes = [IsOwnerOrReadOnly, IsBanned, IsClosed]
+#
+#
+# class TopicListAPI(generics.ListCreateAPIView):
+#   permission_classes = [IsBanned,]
+#  serializer_class = TopicSerializer
+# queryset = Topic.objects.all()
+# filter_backends = [DjangoFilterBackend]
+# ilterset_fields = ['title', 'body', 'author']
+#
+#   def perform_create(self, serializer):
+#    serializer.save(author=self.request.user)

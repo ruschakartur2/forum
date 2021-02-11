@@ -3,12 +3,11 @@ from django.db import models
 from django.conf import settings
 
 
-
-
 class CustomUser(AbstractUser):
     age = models.PositiveIntegerField(null=True, blank=True)
     is_banned = models.BooleanField('ban status', default=False)
-    is_mutted = models.BooleanField('mute status', default=False)
+    is_muted = models.BooleanField('mute status', default=False)
+
 
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

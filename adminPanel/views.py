@@ -5,8 +5,8 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.permissions import IsAdminUser
 
-from adminPanel.serializers import UserAdminSerializer, TopicAdminSerializer, ModerSerializer
-from blog.models import Topic, Moder
+from adminPanel.serializers import UserAdminSerializer, TopicAdminSerializer
+from blog.models import Topic
 
 
 class UserListView(generics.ListCreateAPIView):
@@ -35,19 +35,3 @@ class TopicAdminDetailView(generics.RetrieveUpdateDestroyAPIView):
     model = Topic
     permission_classes = (IsAdminUser,)
     queryset = Topic.objects.all()
-
-
-class ModerListView(generics.ListCreateAPIView):
-    serializer_class = ModerSerializer
-    model = Moder
-    permission_classes = (IsAdminUser,)
-    queryset = Moder.objects.all()
-
-
-
-
-class ModerDetailView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = ModerSerializer
-    model = Moder
-    permission_classes = (IsAdminUser,)
-    queryset = Moder.objects.all()

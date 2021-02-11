@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import permissions, status
 from rest_framework.exceptions import APIException
 
-from blog.models import Moder, Topic
+from blog.models import Topic
 
 
 class BannedForbidden(APIException):

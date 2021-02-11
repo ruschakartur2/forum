@@ -4,6 +4,14 @@ from django.urls import reverse
 from django.utils import timezone
 
 from accounts.models import CustomUser
+from blog.choices import Role
+
+
+class Membership(models.Model):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    topic = models.ForeignKey('blog.Topic', on_delete=models.CASCADE)
+    role = models.SmallIntegerField(choices=Role.choices,
+                                    default=Role.MEMBER)
 
 
 class Topic(models.Model):
@@ -15,6 +23,9 @@ class Topic(models.Model):
         on_delete=models.CASCADE,
     )
     is_closed = models.BooleanField('closed topic', default=False)
+    members = models.ManyToManyField('accounts.CustomUser',
+                                     through=Membership,
+                                     related_name='topics')
 
     def __str__(self):
         return self.title
@@ -25,11 +36,3 @@ class Topic(models.Model):
     @property
     def owner(self):
         return self.author
-
-
-class Moder(models.Model):
-    user = models.ForeignKey(get_user_model(),unique=True, on_delete=models.CASCADE, related_name='users')
-    topics = models.ManyToManyField(Topic, related_name='topics')
-
-    def __str__(self):
-        return self.user.username
