@@ -1,13 +1,17 @@
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
-from .views import CommentCreateView, CommentListView, CommentDetailView
+from rest_framework.routers import DefaultRouter
+
+from .views import CommentViewSet
 
 from forum import settings
+router = DefaultRouter()
+router.register(r'',CommentViewSet, basename='comments')
+
 
 urlpatterns = [
-    path('api/create/', CommentCreateView.as_view(), name='comment-create'),
-    path('api/', CommentListView.as_view(),name='comments'),
-    path('api/<int:pk>/', CommentDetailView.as_view(), name='comment-detail')
+
+    path('api/',include(router.urls), name='comments'),
 
 ]

@@ -10,8 +10,13 @@ from blog.choices import Role
 class Membership(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     topic = models.ForeignKey('blog.Topic', on_delete=models.CASCADE)
-    role = models.SmallIntegerField(choices=Role.choices,
-                                    default=Role.MEMBER)
+    role = models.PositiveSmallIntegerField(
+        choices=Role.choices,
+        default=Role.MEMBER
+    )
+
+    def __str__(self):
+        return "user: " + self.user.username + "   topic:  " + self.topic.title
 
 
 class Topic(models.Model):
@@ -25,7 +30,8 @@ class Topic(models.Model):
     is_closed = models.BooleanField('closed topic', default=False)
     members = models.ManyToManyField('accounts.CustomUser',
                                      through=Membership,
-                                     related_name='topics')
+                                     related_name='topics',
+                                     )
 
     def __str__(self):
         return self.title

@@ -2,11 +2,10 @@ from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.response import Response
 from knox.models import AuthToken
 
-from blog.permissions import IsOwnerOrReadOnly
 from .models import Profile
 from .serializers import RegisterSerializer, ChangePasswordSerializer, ProfileSerializer
 from knox.views import LoginView as KnoxLoginView
@@ -109,20 +108,12 @@ class ChangePasswordView(generics.UpdateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ProfileListView(generics.ListCreateAPIView):
+class ProfileViewSet(viewsets.ModelViewSet):
     serializer_class = ProfileSerializer
     model = Profile
+    permission_classes = []
     queryset = Profile.objects.all()
-    permission_classes = (IsAuthenticated, IsAdminUser)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
-
-class ProfileDetailView(generics.RetrieveUpdateAPIView):
-    serializer_class = ProfileSerializer
-    model = Profile
-    permission_classes = (IsOwnerOrReadOnly,)
-    queryset = Profile.objects.all()
-
 

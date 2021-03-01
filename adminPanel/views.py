@@ -1,37 +1,25 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import render
-
-# Create your views here.
-from rest_framework import generics
+from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser
 
-from adminPanel.serializers import UserAdminSerializer, TopicAdminSerializer
-from blog.models import Topic
+from adminPanel.serializers import UserAdminSerializer, TopicAdminSerializer, MembershipSerializer
+from blog.models import Topic, Membership
 
 
-class UserListView(generics.ListCreateAPIView):
-    serializer_class = UserAdminSerializer
-    model = get_user_model()
-    permission_classes = (IsAdminUser,)
+class UserViewSet(viewsets.ModelViewSet):
     queryset = get_user_model().objects.all()
-
-
-class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = UserAdminSerializer
     model = get_user_model()
+    serializer_class = UserAdminSerializer
     permission_classes = (IsAdminUser,)
-    queryset = get_user_model().objects.all()
 
 
-class TopicAdminListView(generics.ListCreateAPIView):
+class TopicAdminViewSet(viewsets.ModelViewSet):
     serializer_class = TopicAdminSerializer
-    model = Topic
     permission_classes = (IsAdminUser,)
     queryset = Topic.objects.all()
 
 
-class TopicAdminDetailView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = TopicAdminSerializer
-    model = Topic
+class MembershipAdminViewSet(viewsets.ModelViewSet):
+    serializer_class = MembershipSerializer
     permission_classes = (IsAdminUser,)
-    queryset = Topic.objects.all()
+    queryset = Membership.objects.all()

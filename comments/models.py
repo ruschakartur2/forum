@@ -16,7 +16,11 @@ class Comment(models.Model):
         get_user_model(),
         on_delete=models.CASCADE,
     )
-    reply = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name='replies')
+    reply = models.ForeignKey('self',
+                              blank=True,
+                              on_delete=models.CASCADE,
+                              null=True,
+                              related_name='replies')
     date_posted = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

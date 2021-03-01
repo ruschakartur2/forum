@@ -3,14 +3,17 @@ from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django_filters.rest_framework import DjangoFilterBackend
+from dry_rest_permissions.generics import DRYPermissions
 from rest_framework import generics, viewsets, renderers
 from rest_framework.decorators import action, renderer_classes
 from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
-from .models import Topic
+from .choices import Role
+from .models import Topic, Membership
 from .serializers import TopicSerializer
-from .permissions import IsOwnerOrReadOnly, IsBanned, IsClosed
+from .permissions import IsBanned, IsClosed, IsModerToTopic
 
 
 class TopicCreateView(LoginRequiredMixin, CreateView):
@@ -69,23 +72,19 @@ class TopicDeleteView(LoginRequiredMixin, DeleteView):
 class TopicViewSet(viewsets.ModelViewSet):
     serializer_class = TopicSerializer
     queryset = Topic.objects.all()
-    
+    permission_classes_by_action = {'create': [IsAuthenticated, IsBanned],
+                                    'list': [AllowAny, IsBanned],
+                                    'update': [IsModerToTopic, IsBanned],
+                                    'partial_update': [IsModerToTopic],
+                                    'retrieve': [AllowAny, IsBanned, IsModerToTopic], }
+
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-# class TopicDetailAPI(generics.RetrieveUpdateDestroyAPIView):
-#    queryset = Topic.objects.all()
-#    serializer_class = TopicSerializer
-#
-#   permission_classes = [IsOwnerOrReadOnly, IsBanned, IsClosed]
-#
-#
-# class TopicListAPI(generics.ListCreateAPIView):
-#   permission_classes = [IsBanned,]
-#  serializer_class = TopicSerializer
-# queryset = Topic.objects.all()
-# filter_backends = [DjangoFilterBackend]
-# ilterset_fields = ['title', 'body', 'author']
-#
-#   def perform_create(self, serializer):
-#    serializer.save(author=self.request.user)
+    def get_permissions(self):
+        try:
+            # return permission_classes depending on `action`
+            return [permission() for permission in self.permission_classes_by_action[self.action]]
+        except KeyError:
+            # action is not set return default permission_classes
+            return [permission() for permission in self.permission_classes]

@@ -16,10 +16,13 @@ Including another URLconf
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework_swagger.views import get_swagger_view
 
 from forum import settings
+schema_view = get_swagger_view(title='Forum API')
 
 urlpatterns = [
+    path(r'docs/', schema_view),
     path('admin/', admin.site.urls),
     path('admin/api/',include('adminPanel.urls')),
     path('accounts/',include('django.contrib.auth.urls')),

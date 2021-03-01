@@ -2,33 +2,33 @@ from django.shortcuts import render
 
 # Create your views here.
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from blog.permissions import IsOwnerOrReadOnly, IsBanned
+from blog.permissions import IsBanned
 from .models import Comment
-from .serializers import CommentCreateSerializer, CommentListSerializer
+from .permissions import IsOwnerOrReadOnly
+from .serializers import CommentSerializer
 
 
-class CommentCreateView(generics.CreateAPIView):
-    model = Comment
-    serializer_class = CommentCreateSerializer
-
-
-class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
-    model = Comment
+class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
-    serializer_class = CommentListSerializer
+    serializer_class = CommentSerializer
 
-    permission_classes = [IsOwnerOrReadOnly, IsBanned]
+    permission_classes_by_action = {'create': [IsAuthenticated, IsBanned],
+                                    'list': [AllowAny, IsBanned],
+                                    'update': [IsOwnerOrReadOnly, IsBanned],
+                                    'partial_update': [IsOwnerOrReadOnly],
+                                    'retrieve': [AllowAny, IsBanned, IsOwnerOrReadOnly],
+                                    'destroy': [IsOwnerOrReadOnly],}
 
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
-
-class CommentListView(generics.ListAPIView):
-    model = Comment
-    queryset = Comment.objects.all()
-    serializer_class = CommentListSerializer
-    permission_classes = [IsBanned]
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['topic', 'author', 'content']
+    def get_permissions(self):
+        try:
+            # return permission_classes depending on `action`
+            return [permission() for permission in self.permission_classes_by_action[self.action]]
+        except KeyError:
+            # action is not set return default permission_classes
+            return [permission() for permission in self.permission_classes]

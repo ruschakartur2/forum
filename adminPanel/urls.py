@@ -1,10 +1,13 @@
 from django.urls import path, include
 
-from adminPanel.views import UserListView, UserDetailView, TopicAdminListView, TopicAdminDetailView
+from rest_framework.routers import DefaultRouter
 
+from adminPanel.views import TopicAdminViewSet, UserViewSet, MembershipAdminViewSet
+
+router = DefaultRouter()
+router.register(r'users', UserViewSet, basename='users')
+router.register(r'topics', TopicAdminViewSet, basename='topics')
+router.register(r'memberships',MembershipAdminViewSet,basename='memberships')
 urlpatterns = [
-    path('users', UserListView.as_view(), name='users'),
-    path('users/<int:pk>/', UserDetailView.as_view(), name='user-detail'),
-    path('topics',TopicAdminListView.as_view(), name='topics'),
-    path('topics/<int:pk>/', TopicAdminDetailView.as_view(), name='topic-detail'),
+    path('', include(router.urls)),
 ]
